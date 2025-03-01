@@ -17,8 +17,8 @@ env:
 
   DEPLOY_STACK_NAME: test-hack
 
-  HOST: root@{{ secrets.SERVER_IP }}
-  DEPLOY_DIRECTORY: /home/test-hack/users # путь до директории для деплоя
+  HOST: root@${{ secrets.SERVER_IP }}
+  DEPLOY_DIRECTORY: /home/test-hack/s3_worker # путь до директории для деплоя
   SSH_PORT: 22 # ssh port
 
   SECRET_KEY: ${{ secrets.SECRET_KEY }}
