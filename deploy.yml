@@ -1,0 +1,85 @@
+version: '3.8'
+
+services:
+  s3_worker:
+    image: ${DOCKER_REGISTRY}/${DOCKER_REGISTRY_OWNER}/${DOCKER_APP_NAME}:${IMAGE_TAG}
+    deploy:
+       labels:
+          - "traefik.enable=true"
+          - "traefik.http.routers.s3_worker.rule=Host(`api.files.ryazan-market.ru`) || Host(`api.files.hack.vingp.dev`)"
+          - "traefik.http.routers.s3_worker.entrypoints=http,https"
+          - "traefik.http.routers.s3_worker.tls.certresolver=myresolver"
+          - "traefik.http.services.s3_worker.loadbalancer.server.port=8000"
+          - "traefik.http.routers.s3_worker.service=s3_worker"
+          - "traefik.docker.network=traefik-swarm"
+          - "traefik.docker.lbswarm=true"
+       replicas: 1
+       update_config:
+        parallelism: 3
+        order: stop-first
+        failure_action: rollback
+        delay: 10s
+       rollback_config:
+        parallelism: 0
+        order: stop-first
+       restart_policy:
+        condition: any
+        delay: 20s
+        max_attempts: 5
+        window: 120s
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+
+    networks:
+      - "default"
+      - "traefik"
+      - "s3"
+
+  api_s3:
+    deploy:
+        labels:
+              - "traefik.enable=true"
+              - "traefik.http.routers.fsp-hub-api_s3.rule=Host(`files.ryazan-market.ru`) || Host(`files.hack.vingp.dev`)"
+              - "traefik.http.routers.fsp-hub-api_s3.entrypoints=http,https"
+              - "traefik.http.routers.fsp-hub-api_s3.tls.certresolver=myresolver"
+              - "traefik.http.services.fsp-hub-api_s3.loadbalancer.server.port=9000"
+              - "traefik.http.routers.fsp-hub-api_s3.service=fsp-hub-api_s3"
+              - "traefik.http.routers.minio-console.service=minio-console"
+              - "traefik.http.routers.minio-console.tls.certresolver=myresolver"
+              - "traefik.http.routers.minio-console.rule=Host(`minio.ryazan-market.ru`) || Host(`minio.hack.vingp.dev`)"
+              - "traefik.http.services.minio-console.loadbalancer.server.port=9001"
+              - "traefik.docker.network=traefik-swarm"
+              - "traefik.docker.lbswarm=true"
+        replicas: 1
+        update_config:
+            parallelism: 3
+            order: stop-first
+            failure_action: rollback
+            delay: 10s
+        rollback_config:
+            parallelism: 0
+            order: stop-first
+        restart_policy:
+            condition: any
+            delay: 20s
+            max_attempts: 5
+            window: 120s
+    labels:
+      logging: "promtail"
+      logging_jobname: "containerlogs"
+
+    networks:
+      - "default"
+      - "traefik"
+      - "s3"
+
+
+networks:
+  default:
+    name: test-hack
+    external: true
+  traefik:
+    name: traefik-swarm
+    external: true
+  s3:
