@@ -1,10 +1,10 @@
 version: '3.8'
 
 x-environment: &default-environment
-  MINIO_ACCESS_KEY: hoip4CBuv6oHDhn104wE
-  MINIO_SECRET_KEY: 5dEBwRO9CFVWAqZR3lO9ZSh7cuzi1rZ5Lp46k8Bv
-  MINIO_ENDPOINT_URL: "https://files.fsp-hub.ru"
-  MINIO_PUBLIC_URL: "https://files.fsp-hub.ru"
+  MINIO_ACCESS_KEY: bdwsdjHtOmZEVvsbmJzo
+  MINIO_SECRET_KEY: fpXu2UgNuRyE7gIKhtQCXg5J0Xg9zuq4PZzsmqoa
+  MINIO_ENDPOINT_URL: "https://files.ryazan-market.ru"
+  MINIO_PUBLIC_URL: "https://files.ryazan-market.ru"
 
 services:
   s3_worker:
